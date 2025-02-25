@@ -2,7 +2,15 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
-    public sealed class InputManager : MonoBehaviour
+    //TODO: Make it in new input system
+    public interface IInputManager
+    {
+        float HorizontalDirection { get; }
+        bool IsFireButtonDown { get; }
+    }
+
+    
+    public sealed class InputManager : MonoBehaviour,IInputManager
     {
         public float HorizontalDirection { get; private set; }
         public bool IsFireButtonDown { get; private set; }

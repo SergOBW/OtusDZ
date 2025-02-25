@@ -4,45 +4,47 @@ namespace ShootEmUp
 {
     public sealed class WeaponComponent : MonoBehaviour
     {
-        public Vector2 Position => firePoint.position;
-
-        public Quaternion Rotation => firePoint.rotation;
+        public Vector2 FirePointPosition => firePoint.position;
+        public Quaternion FirePointRotation => firePoint.rotation;
         
-        [SerializeField] private BulletSystem bulletSystem;
         [SerializeField] private BulletConfig bulletConfig;
         [SerializeField] private Transform firePoint;
-
-        private InputManager inputManager;
+        
+        private BulletSystem _bulletSystem;
+        
+        private ITeam _team; 
 
         private void Awake()
         {
-            inputManager = GetComponent<InputManager>();
+            _bulletSystem = FindObjectOfType<BulletSystem>();
+            _team = GetComponent<ITeam>();
         }
-
-        private void Update()
+        
+        public void Fire(Vector2 FireDirection)
         {
-            if (inputManager is null)
+            _bulletSystem.FlyBulletByArgs(new BulletSystem.Args
             {
-                return;
-            }
-
-            if (inputManager.IsFireButtonDown)
-            {
-                OnFlyBullet();
-            }
-        }
-
-        private void OnFlyBullet()
-        {
-            bulletSystem.FlyBulletByArgs(new BulletSystem.Args
-            {
-                isPlayer = true,
+                isPlayer = _team.IsPlayer(),
                 physicsLayer = (int) bulletConfig.physicsLayer,
                 color = bulletConfig.color,
                 damage = bulletConfig.damage,
-                position = Position,
-                velocity = Rotation * Vector3.up * this.bulletConfig.speed
+                position = FirePointPosition,
+                velocity = FireDirection * Vector3.up * bulletConfig.speed
             });
         }
+        
+        public void Fire()
+        {
+            _bulletSystem.FlyBulletByArgs(new BulletSystem.Args
+            {
+                isPlayer = _team.IsPlayer(),
+                physicsLayer = (int) bulletConfig.physicsLayer,
+                color = bulletConfig.color,
+                damage = bulletConfig.damage,
+                position = FirePointPosition,
+                velocity = FirePointRotation * Vector3.up * bulletConfig.speed
+            });
+        }
+        
     }
 }

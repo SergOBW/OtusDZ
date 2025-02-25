@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace ShootEmUp
@@ -11,25 +10,30 @@ namespace ShootEmUp
         [SerializeField]
         private float speed = 5.0f;
 
-        private InputManager inputManager;
-
+        private InputManager _inputManager;
+        private ITeam _team;
         private void Awake()
         {
-            inputManager = FindObjectOfType<InputManager>();
+            _inputManager = FindObjectOfType<InputManager>();
+            _team = GetComponent<ITeam>();
         }
-
+        
         public void MoveByRigidbodyVelocity(Vector2 vector)
         {
-            var nextPosition = this.rigidbody2D.position + vector * this.speed;
-            this.rigidbody2D.MovePosition(nextPosition);
+            var nextPosition = rigidbody2D.position + vector * speed;
+            rigidbody2D.MovePosition(nextPosition);
         }
         private void FixedUpdate()
         {
-            if (inputManager is null)
+            if (!_inputManager || _team is null)
             {
                 return;
             }
-            MoveByRigidbodyVelocity(new Vector2(this.inputManager.HorizontalDirection, 0) * Time.fixedDeltaTime);
+
+            if (_team.IsPlayer())
+            {
+                MoveByRigidbodyVelocity(new Vector2(this._inputManager.HorizontalDirection, 0) * Time.fixedDeltaTime);
+            }
         }
     }
 }
