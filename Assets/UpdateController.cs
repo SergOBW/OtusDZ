@@ -13,14 +13,14 @@ public interface IFixedUpdate
     public void CustomFixedUpdate();
 }
 
-public class UpdateController : MonoBehaviour, IPauseGameListener, IResumeGameListener, IStartGameListener, IFinishGameListener
+public class UpdateController : MonoBehaviour, IPauseGameListener, IResumeGameListener, IStartGameListener, IFinishGameListener, IMainMenuListener
 {
     public static UpdateController Instance;
     
     private List<IUpdate> _updates;
     private List<IFixedUpdate> _fixedUpdates;
 
-    private bool _isGameplayRunning;
+    private bool _isUpdateRunning;
     private void Awake()
     {
         Instance = this;
@@ -34,7 +34,7 @@ public class UpdateController : MonoBehaviour, IPauseGameListener, IResumeGameLi
 
     private void Update()
     {
-        if (!_isGameplayRunning)
+        if (!_isUpdateRunning)
         {
             return;
         }
@@ -46,7 +46,7 @@ public class UpdateController : MonoBehaviour, IPauseGameListener, IResumeGameLi
 
     private void FixedUpdate()
     {
-        if (!_isGameplayRunning)
+        if (!_isUpdateRunning)
         {
             return;
         }
@@ -58,22 +58,27 @@ public class UpdateController : MonoBehaviour, IPauseGameListener, IResumeGameLi
 
     public void OnPauseGame()
     {
-        _isGameplayRunning = false;
+        _isUpdateRunning = false;
     }
 
     public void OnResumeGame()
     {
-        _isGameplayRunning = true;
+        _isUpdateRunning = true;
     }
 
     public void OnStartGame()
     {
-        _isGameplayRunning = true;
+        _isUpdateRunning = true;
     }
 
     public void OnFinishGame()
     {
-        _isGameplayRunning = false;
+        _isUpdateRunning = false;
+    }
+    
+    public void OnMainMenu()
+    {
+        _isUpdateRunning = true;
     }
 
     public void AddNewListener<T>(T newListener)
@@ -101,4 +106,5 @@ public class UpdateController : MonoBehaviour, IPauseGameListener, IResumeGameLi
             _fixedUpdates.Remove(newFixedUpdate);
         }
     }
+    
 }

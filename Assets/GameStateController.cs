@@ -24,6 +24,11 @@ public interface IFinishGameListener : IGameListener
     public void OnFinishGame();
 }
 
+public interface IMainMenuListener : IGameListener
+{
+    public void OnMainMenu();
+}
+
 
 public enum GameState
 {
@@ -43,6 +48,7 @@ public class GameStateController : MonoBehaviour
     {
         Instance = this;
         FindAllGameListeners();
+        MainMenu();
     }
     
     public void StartGame()
@@ -116,5 +122,21 @@ public class GameStateController : MonoBehaviour
 
         this.gameListeners = gameListeners;
     }
-    
+
+    public void MainMenu()
+    {
+        if (_currentState != GameState.Finished && _currentState != GameState.MainMenu)
+        {
+            return;
+        }
+        _currentState = GameState.MainMenu;
+        
+        foreach (var gameListener in gameListeners)
+        {
+            if (gameListener is IMainMenuListener mainMenuListener)
+            {
+                mainMenuListener.OnMainMenu();
+            }
+        }
+    }
 }
