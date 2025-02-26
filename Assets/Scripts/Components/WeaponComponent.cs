@@ -20,7 +20,7 @@ namespace ShootEmUp
             _team = GetComponent<ITeam>();
         }
         
-        public void Fire(Vector2 FireDirection)
+        public void Fire(Vector2 fireDirection)
         {
             _bulletSystem.FlyBulletByArgs(new Args
             {
@@ -29,7 +29,7 @@ namespace ShootEmUp
                 color = bulletConfig.color,
                 damage = bulletConfig.damage,
                 position = FirePointPosition,
-                velocity = FireDirection * Vector3.up * bulletConfig.speed
+                velocity = fireDirection  * bulletConfig.speed
             });
         }
         
