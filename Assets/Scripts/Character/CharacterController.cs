@@ -41,10 +41,4 @@ namespace ShootEmUp
             return transform;
         }
     }
-    
-
-    public interface ITarget
-    {
-        public Transform GetTransform();
-    }
 }

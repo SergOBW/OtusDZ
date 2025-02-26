@@ -3,6 +3,10 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
+    public interface ITeam
+    {
+        public bool IsPlayer();
+    }
     public sealed class HitPointsComponent : MonoBehaviour, ITeam
     {
         public event Action<GameObject> OnHpEmptyEvent;
@@ -28,10 +32,5 @@ namespace ShootEmUp
         {
             return isPlayer;
         }
-    }
-    
-    public interface ITeam
-    {
-        public bool IsPlayer();
     }
 }

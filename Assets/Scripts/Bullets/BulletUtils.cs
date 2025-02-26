@@ -2,6 +2,10 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
+    public interface ITarget
+    {
+        public Transform GetTransform();
+    }
     internal static class BulletUtils
     {
         internal static void DealDamage(Bullet bullet, GameObject other)

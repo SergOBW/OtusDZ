@@ -22,20 +22,20 @@ namespace ShootEmUp
         
         public void Fire(Vector2 FireDirection)
         {
-            _bulletSystem.FlyBulletByArgs(new BulletSystem.Args
+            _bulletSystem.FlyBulletByArgs(new Args
             {
                 isPlayer = _team.IsPlayer(),
                 physicsLayer = (int) bulletConfig.physicsLayer,
                 color = bulletConfig.color,
                 damage = bulletConfig.damage,
                 position = FirePointPosition,
-                velocity = FireDirection * Vector3.up * bulletConfig.speed
+                velocity = FireDirection * bulletConfig.speed
             });
         }
         
         public void Fire()
         {
-            _bulletSystem.FlyBulletByArgs(new BulletSystem.Args
+            _bulletSystem.FlyBulletByArgs(new Args
             {
                 isPlayer = _team.IsPlayer(),
                 physicsLayer = (int) bulletConfig.physicsLayer,

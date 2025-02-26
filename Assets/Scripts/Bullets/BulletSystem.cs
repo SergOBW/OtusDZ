@@ -2,6 +2,16 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace ShootEmUp
 {
+    public struct Args
+    {
+        public Vector2 position;
+        public Vector2 velocity;
+        public Color color;
+        public int physicsLayer;
+        public int damage;
+        public bool isPlayer;
+    }
+    
     public sealed class BulletSystem : MonoBehaviour
     {
         [SerializeField] private Transform worldTransform;
@@ -41,6 +51,10 @@ namespace ShootEmUp
 
         private void OnBulletCollision(Bullet bullet, Collision2D collision)
         {
+            if (bullet.gameObject.layer == collision.gameObject.layer)
+            {
+                return;
+            }
             BulletUtils.DealDamage(bullet, collision.gameObject);
             RemoveBullet(bullet);
         }
@@ -50,15 +64,6 @@ namespace ShootEmUp
             bullet.OnCollisionEnteredEvent -= OnBulletCollision;
             bulletPool.ReleaseBullet(bullet);
         }
-
-        public struct Args
-        {
-            public Vector2 position;
-            public Vector2 velocity;
-            public Color color;
-            public int physicsLayer;
-            public int damage;
-            public bool isPlayer;
-        }
+        
     }
 }
