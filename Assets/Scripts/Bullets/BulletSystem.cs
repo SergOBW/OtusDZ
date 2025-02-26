@@ -1,8 +1,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 namespace ShootEmUp
+
 {
-    public sealed class BulletSystem : MonoBehaviour
+    public struct Args
+    {
+        public Vector2 position;
+        public Vector2 velocity;
+        public Color color;
+        public int physicsLayer;
+        public int damage;
+        public bool isPlayer;
+    }
+    
+    public sealed class BulletSystem : MonoBehaviour , IFixedUpdate, IPauseGameListener, IResumeGameListener, IFinishGameListener
     {
         [SerializeField] private Transform worldTransform;
         [SerializeField] private LevelBounds levelBounds;
@@ -10,7 +21,7 @@ namespace ShootEmUp
 
         private readonly List<Bullet> _cache = new();
 
-        private void FixedUpdate()
+        public void CustomFixedUpdate()
         {
             _cache.Clear();
             _cache.AddRange(bulletPool.GetActiveBullets());
@@ -51,14 +62,29 @@ namespace ShootEmUp
             bulletPool.ReleaseBullet(bullet);
         }
 
-        public struct Args
+        public void OnPauseGame()
         {
-            public Vector2 position;
-            public Vector2 velocity;
-            public Color color;
-            public int physicsLayer;
-            public int damage;
-            public bool isPlayer;
+            foreach (var bullet in bulletPool.GetActiveBullets())
+            {
+                bullet.Pause();
+            }
+        }
+
+        public void OnResumeGame()
+        {
+            foreach (var bullet in bulletPool.GetActiveBullets())
+            {
+                bullet.Resume();
+            }
+        }
+
+
+        public void OnFinishGame()
+        {
+            foreach (var bullet in bulletPool.GetActiveBullets())
+            {
+                RemoveBullet(bullet);
+            }
         }
     }
 }

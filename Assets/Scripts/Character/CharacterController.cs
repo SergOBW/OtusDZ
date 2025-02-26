@@ -4,20 +4,23 @@ namespace ShootEmUp
 {
     [RequireComponent(typeof(HitPointsComponent))]
     [RequireComponent(typeof(WeaponComponent))]
-    public sealed class CharacterController : MonoBehaviour, ITarget
+    public sealed class CharacterController : MonoBehaviour, ITarget, IUpdate, IFinishGameListener, IStartGameListener
     {
         public HitPointsComponent HitPointsComponent { get; private set; }
         public WeaponComponent WeaponComponent { get; private set; }
         
         private InputManager _inputManager;
 
+        private Vector3 _startedPosition;
+
         private void Awake()
         {
             HitPointsComponent = GetComponent<HitPointsComponent>();
             WeaponComponent = GetComponent<WeaponComponent>();
             _inputManager = FindObjectOfType<InputManager>();
+            _startedPosition = transform.position;
         }
-        private void Update()
+        public void CustomUpdate()
         {
             if (!_inputManager  || !WeaponComponent )
             {
@@ -29,16 +32,20 @@ namespace ShootEmUp
                 WeaponComponent.Fire();
             }
         }
-        
-
-        public bool IsPlayer()
-        {
-            return true;
-        }
 
         public Transform GetTransform()
         {
             return transform;
+        }
+
+        public void OnFinishGame()
+        {
+            transform.position = _startedPosition;
+        }
+
+        public void OnStartGame()
+        {
+            HitPointsComponent.SetDefaults();
         }
     }
     

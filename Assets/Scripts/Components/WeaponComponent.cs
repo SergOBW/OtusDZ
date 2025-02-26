@@ -22,7 +22,7 @@ namespace ShootEmUp
         
         public void Fire(Vector2 FireDirection)
         {
-            _bulletSystem.FlyBulletByArgs(new BulletSystem.Args
+            _bulletSystem.FlyBulletByArgs(new Args
             {
                 isPlayer = _team.IsPlayer(),
                 physicsLayer = (int) bulletConfig.physicsLayer,
@@ -35,7 +35,7 @@ namespace ShootEmUp
         
         public void Fire()
         {
-            _bulletSystem.FlyBulletByArgs(new BulletSystem.Args
+            _bulletSystem.FlyBulletByArgs(new Args
             {
                 isPlayer = _team.IsPlayer(),
                 physicsLayer = (int) bulletConfig.physicsLayer,

@@ -1,36 +1,26 @@
+
 using UnityEngine;
 
 namespace ShootEmUp
 {
-    
-public sealed class GameManager : MonoBehaviour
+    public sealed class GameManager : MonoBehaviour, IStartGameListener, IFinishGameListener
     {
         private CharacterController _characterController;
         
-        private void Start()
-        {
-            StartGame();
-        }
-        private void OnDestroy()
-        {
-            ExitGame();
-        }
-        
-        private void StartGame()
+        public void OnStartGame()
         {
             _characterController = FindObjectOfType<CharacterController>();
             _characterController.HitPointsComponent.OnHpEmptyEvent += FinishGame;
         }
-        
-        public void ExitGame()
+
+        public void OnFinishGame()
         {
             _characterController.HitPointsComponent.OnHpEmptyEvent -= FinishGame;
         }
-        
+
         private void FinishGame(GameObject gameObject)
         {
-            Debug.Log("Game finished");
-            Time.timeScale = 0;
+            GameStateController.Instance.FinishGame();
         }
     }
 }

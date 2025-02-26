@@ -8,14 +8,13 @@ namespace ShootEmUp
         float HorizontalDirection { get; }
         bool IsFireButtonDown { get; }
     }
-
     
-    public sealed class InputManager : MonoBehaviour,IInputManager
+    public sealed class InputManager : MonoBehaviour,IInputManager , IUpdate
     {
         public float HorizontalDirection { get; private set; }
         public bool IsFireButtonDown { get; private set; }
         
-        private void Update()
+        public void CustomUpdate()
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {

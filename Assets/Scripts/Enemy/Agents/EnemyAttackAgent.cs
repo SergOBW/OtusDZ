@@ -1,8 +1,9 @@
+using System;
 using UnityEngine;
 
 namespace ShootEmUp
 {
-    public sealed class EnemyAttackAgent : MonoBehaviour
+    public sealed class EnemyAttackAgent : MonoBehaviour, IFixedUpdate
     {
         [SerializeField] private WeaponComponent weaponComponent;
         [SerializeField] private EnemyMoveAgent moveAgent;
@@ -17,9 +18,17 @@ namespace ShootEmUp
             _target = target;
         }
 
-        private void Awake()
+        public void Initialize()
         {
             _weaponComponent = GetComponent<WeaponComponent>();
+            UpdateController.Instance.AddNewListener(this);
+            Reset();
+        }
+
+        public void DeInitialize()
+        {
+            _weaponComponent = null;
+            UpdateController.Instance.RemoveListener(this);
         }
 
         public void Reset()
@@ -27,7 +36,7 @@ namespace ShootEmUp
             _currentTime = countdown;
         }
 
-        private void FixedUpdate()
+        public void CustomFixedUpdate()
         {
             if (!moveAgent.IsReached)
             {
