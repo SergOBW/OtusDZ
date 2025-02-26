@@ -38,7 +38,8 @@ public class MenuController : MonoBehaviour, IFinishGameListener, IUpdate, IMain
             StartGame();
         }
         
-        countdownText.text = $"Game starts in : {_timer}";
+        int seconds = Mathf.FloorToInt(_timer);
+        countdownText.text = $"Game starts in : {seconds}";
     }
     private void ShowMainMenu()
     {
