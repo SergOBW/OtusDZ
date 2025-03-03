@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using ShootEmUp;
 using UnityEngine;
 
 public interface IUpdate
@@ -78,7 +77,7 @@ public class UpdateController : MonoBehaviour, IPauseGameListener, IResumeGameLi
     
     public void OnMainMenu()
     {
-        _isUpdateRunning = true;
+        _isUpdateRunning = false;
     }
 
     public void AddNewListener<T>(T newListener)

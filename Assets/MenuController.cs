@@ -1,10 +1,8 @@
-using System;
-using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MenuController : MonoBehaviour, IFinishGameListener, IUpdate, IMainMenuListener
+public class MenuController : MonoBehaviour, IFinishGameListener, IMainMenuListener
 {
     [SerializeField] private GameObject blurGameObject;
 
@@ -28,7 +26,7 @@ public class MenuController : MonoBehaviour, IFinishGameListener, IUpdate, IMain
         mainMenuButton.onClick.AddListener(OnMainMenuButton);
     }
 
-    public void CustomUpdate()
+    public void Update()
     {
         if (_timer >= 0 && _isTimerStarted)
         {
