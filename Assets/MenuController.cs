@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using VContainer;
 
 public class MenuController : MonoBehaviour, IFinishGameListener, IMainMenuListener
 {
@@ -17,15 +18,20 @@ public class MenuController : MonoBehaviour, IFinishGameListener, IMainMenuListe
     [SerializeField]private int gameStartTimer;
     private float _timer;
     private bool _isTimerStarted;
+    
+    private GameStateController _gameStateController;
 
-    private void Awake()
+    [Inject]
+    public void Construct(GameStateController gameStateController)
     {
+        _gameStateController = gameStateController;
+        
         startGameButton.onClick.AddListener(StartTimer);
         pauseGameButton.onClick.AddListener(PauseGame);
         resumeGameButton.onClick.AddListener(ResumeGame);
         mainMenuButton.onClick.AddListener(OnMainMenuButton);
     }
-
+    
     public void Update()
     {
         if (_timer >= 0 && _isTimerStarted)
@@ -69,7 +75,7 @@ public class MenuController : MonoBehaviour, IFinishGameListener, IMainMenuListe
         resumeGameButton.gameObject.SetActive(false);
         pauseGameButton.gameObject.SetActive(true);
         
-        GameStateController.Instance.StartGame();
+        _gameStateController.StartGame();
     }
     private void PauseGame()
     {
@@ -79,7 +85,7 @@ public class MenuController : MonoBehaviour, IFinishGameListener, IMainMenuListe
         pauseGameButton.gameObject.SetActive(false);
         resumeGameButton.gameObject.SetActive(true);
         
-        GameStateController.Instance.PauseGame();
+        _gameStateController.PauseGame();
     }
     private void ResumeGame()
     {
@@ -89,12 +95,12 @@ public class MenuController : MonoBehaviour, IFinishGameListener, IMainMenuListe
         resumeGameButton.gameObject.SetActive(false);
         pauseGameButton.gameObject.SetActive(true);
         
-        GameStateController.Instance.ResumeGame();
+        _gameStateController.ResumeGame();
     }
 
     private void OnMainMenuButton()
     {
-        GameStateController.Instance.MainMenu();
+        _gameStateController.MainMenu();
     }
 
     public void OnFinishGame()
@@ -102,7 +108,7 @@ public class MenuController : MonoBehaviour, IFinishGameListener, IMainMenuListe
         gameFinishedText.gameObject.SetActive(true);
         mainMenuButton.gameObject.SetActive(true);
     }
-
+    
     public void OnMainMenu()
     {
         ShowMainMenu();

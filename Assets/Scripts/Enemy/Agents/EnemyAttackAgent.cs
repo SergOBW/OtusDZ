@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace ShootEmUp
@@ -12,23 +11,25 @@ namespace ShootEmUp
         private Transform _target;
         private float _currentTime;
         private WeaponComponent _weaponComponent;
+        private UpdatesDispatcher updatesDispatcher;
 
         public void SetTarget(Transform target)
         {
             _target = target;
         }
 
-        public void Initialize()
+        public void Initialize(UpdatesDispatcher updatesDispatcher)
         {
+            this.updatesDispatcher = updatesDispatcher;
             _weaponComponent = GetComponent<WeaponComponent>();
-            UpdateController.Instance.AddNewListener(this);
+            this.updatesDispatcher.AddNewListener(this);
             Reset();
         }
 
         public void DeInitialize()
         {
             _weaponComponent = null;
-            UpdateController.Instance.RemoveListener(this);
+            updatesDispatcher.RemoveListener(this);
         }
 
         public void Reset()

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
+using VContainer.Unity;
 
 public interface IGameListener{}
 
@@ -37,17 +37,27 @@ public enum GameState
     Paused = 2,
     Finished = 3
 }
-public class GameStateController : MonoBehaviour
+public class GameStateController : IStartable
 {
     private GameState _currentState;
+    
+    private List<IGameListener> _gameListeners = new List<IGameListener>();
 
-    public static GameStateController Instance;
-    private List<IGameListener> gameListeners = new List<IGameListener>();
-
-    private void Awake()
+    public void StartDispatch(IEnumerable<IGameListener> gameListeners)
     {
-        Instance = this;
-        FindAllGameListeners();
+        _gameListeners.AddRange(gameListeners);
+    }
+    
+    public void StopDispatch(IEnumerable<IGameListener> gameListeners)
+    {
+        foreach (var gameListener in gameListeners)
+        {
+            _gameListeners.Remove(gameListener);
+        }
+    }
+    
+    public void Start()
+    {
         MainMenu();
     }
     
@@ -58,7 +68,7 @@ public class GameStateController : MonoBehaviour
             return;
         }
         _currentState = GameState.Playing;
-        foreach (var gameListener in gameListeners)
+        foreach (var gameListener in _gameListeners)
         {
             if (gameListener is IStartGameListener startGameListener)
             {
@@ -74,7 +84,7 @@ public class GameStateController : MonoBehaviour
             return;
         }
         _currentState = GameState.Playing;
-        foreach (var gameListener in gameListeners)
+        foreach (var gameListener in _gameListeners)
         {
             if (gameListener is IResumeGameListener resumeGameListener)
             {
@@ -90,7 +100,7 @@ public class GameStateController : MonoBehaviour
             return;
         }
         _currentState = GameState.Paused;
-        foreach (var gameListener in gameListeners)
+        foreach (var gameListener in _gameListeners)
         {
             if (gameListener is IPauseGameListener pauseGameListener)
             {
@@ -107,7 +117,7 @@ public class GameStateController : MonoBehaviour
         }
         _currentState = GameState.Finished;
         
-        foreach (var gameListener in gameListeners)
+        foreach (var gameListener in _gameListeners)
         {
             if (gameListener is IFinishGameListener finishGameListener)
             {
@@ -116,13 +126,6 @@ public class GameStateController : MonoBehaviour
         }
     }
     
-    private void FindAllGameListeners()
-    {
-        List<IGameListener> gameListeners = FindObjectsOfType<MonoBehaviour>().OfType<IGameListener>().ToList();
-
-        this.gameListeners = gameListeners;
-    }
-
     public void MainMenu()
     {
         if (_currentState != GameState.Finished && _currentState != GameState.MainMenu)
@@ -131,7 +134,7 @@ public class GameStateController : MonoBehaviour
         }
         _currentState = GameState.MainMenu;
         
-        foreach (var gameListener in gameListeners)
+        foreach (var gameListener in _gameListeners)
         {
             if (gameListener is IMainMenuListener mainMenuListener)
             {

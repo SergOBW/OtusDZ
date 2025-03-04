@@ -1,26 +1,30 @@
-
-using UnityEngine;
-
 namespace ShootEmUp
 {
-    public sealed class GameManager : MonoBehaviour, IStartGameListener, IFinishGameListener
+    public sealed class GameManager : IStartGameListener, IFinishGameListener
     {
-        private CharacterController _characterController;
+        private GameStateController _gameStateController;
+        private EventBus _eventBus;
+
+        public GameManager(GameStateController gameStateController, EventBus eventBus)
+        {
+            _gameStateController = gameStateController;
+            _eventBus = eventBus;
+        }
         
         public void OnStartGame()
         {
-            _characterController = FindObjectOfType<CharacterController>();
-            _characterController.HitPointsComponent.OnHpEmptyEvent += FinishGame;
+            _eventBus.Subscribe<PlayerDiedEvent>(FinishGame);
         }
-
+        
         public void OnFinishGame()
         {
-            _characterController.HitPointsComponent.OnHpEmptyEvent -= FinishGame;
+            _eventBus.Unsubscribe<PlayerDiedEvent>(FinishGame);
         }
 
-        private void FinishGame(GameObject gameObject)
+        private void FinishGame(PlayerDiedEvent eventdata)
         {
-            GameStateController.Instance.FinishGame();
+            _gameStateController.FinishGame();
         }
+
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace ShootEmUp
@@ -13,14 +12,17 @@ namespace ShootEmUp
 
         private bool _isReached;
 
-        public void Initialize()
+        private UpdatesDispatcher updatesDispatcher;
+
+        public void Initialize(UpdatesDispatcher updatesDispatcher)
         {
-            UpdateController.Instance.AddNewListener(this);
+            this.updatesDispatcher = updatesDispatcher;
+            this.updatesDispatcher.AddNewListener(this);
         }
 
         public void DeInitialize()
         {
-            UpdateController.Instance.RemoveListener(this);
+            updatesDispatcher.RemoveListener(this);
         }
 
         public void SetDestination(Vector2 endPoint)

@@ -1,8 +1,9 @@
 using UnityEngine;
+using VContainer;
 
 namespace ShootEmUp
 {
-    public sealed class MoveComponent : MonoBehaviour , IFixedUpdate
+    public sealed class MoveComponent : MonoBehaviour, IFixedUpdate
     {
         [SerializeField]
         private new Rigidbody2D rigidbody2D;
@@ -12,9 +13,11 @@ namespace ShootEmUp
 
         private InputManager _inputManager;
         private ITeam _team;
-        private void Awake()
+
+        [Inject]
+        public void Construct(InputManager inputManager)
         {
-            _inputManager = FindObjectOfType<InputManager>();
+            _inputManager = inputManager;
             _team = GetComponent<ITeam>();
         }
         
@@ -25,14 +28,14 @@ namespace ShootEmUp
         }
         public void CustomFixedUpdate()
         {
-            if (!_inputManager || _team is null)
+            if (_inputManager == null || _team is null)
             {
                 return;
             }
-
+            
             if (_team.IsPlayer())
             {
-                MoveByRigidbodyVelocity(new Vector2(this._inputManager.HorizontalDirection, 0) * Time.fixedDeltaTime);
+                MoveByRigidbodyVelocity(new Vector2(_inputManager.HorizontalDirection, 0) * Time.fixedDeltaTime);
             }
         }
     }

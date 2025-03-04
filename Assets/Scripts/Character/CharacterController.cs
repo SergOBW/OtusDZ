@@ -1,4 +1,5 @@
 using UnityEngine;
+using VContainer;
 
 namespace ShootEmUp
 {
@@ -12,17 +13,18 @@ namespace ShootEmUp
         private InputManager _inputManager;
 
         private Vector3 _startedPosition;
-
-        private void Awake()
+        
+        [Inject]
+        public void Construct(InputManager inputManager)
         {
             HitPointsComponent = GetComponent<HitPointsComponent>();
             WeaponComponent = GetComponent<WeaponComponent>();
-            _inputManager = FindObjectOfType<InputManager>();
+            _inputManager = inputManager;
             _startedPosition = transform.position;
         }
         public void CustomUpdate()
         {
-            if (!_inputManager  || !WeaponComponent )
+            if (_inputManager == null  || !WeaponComponent )
             {
                 return;
             }

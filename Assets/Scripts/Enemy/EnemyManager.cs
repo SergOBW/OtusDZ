@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using VContainer;
 
 namespace ShootEmUp
 {
@@ -18,6 +19,14 @@ namespace ShootEmUp
         
         private float _timer;
         private bool _isSpawning;
+
+        private UpdatesDispatcher updatesDispatcher;
+
+        [Inject]
+        public void Construct(UpdatesDispatcher updatesDispatcher)
+        {
+            this.updatesDispatcher = updatesDispatcher;
+        }
         
         public void CustomUpdate()
         {
@@ -52,8 +61,8 @@ namespace ShootEmUp
                 
             enemy.GetComponent<EnemyAttackAgent>().SetTarget(FindTarget().GetTransform());
             
-            enemy.GetComponent<EnemyMoveAgent>().Initialize();
-            enemy.GetComponent<EnemyAttackAgent>().Initialize();
+            enemy.GetComponent<EnemyMoveAgent>().Initialize(updatesDispatcher);
+            enemy.GetComponent<EnemyAttackAgent>().Initialize(updatesDispatcher);
             
         }
         

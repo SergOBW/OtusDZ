@@ -1,6 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
+using VContainer.Unity;
 
 public interface IUpdate
 {
@@ -12,28 +11,35 @@ public interface IFixedUpdate
     public void CustomFixedUpdate();
 }
 
-public class UpdateController : MonoBehaviour, IPauseGameListener, IResumeGameListener, IStartGameListener, IFinishGameListener, IMainMenuListener
+public class UpdatesDispatcher : ITickable,IFixedTickable, IPauseGameListener, IResumeGameListener, IStartGameListener, IFinishGameListener, IMainMenuListener
 {
-    public static UpdateController Instance;
-    
-    private List<IUpdate> _updates;
-    private List<IFixedUpdate> _fixedUpdates;
+    private List<IUpdate> _updates = new List<IUpdate>();
+    private List<IFixedUpdate> _fixedUpdates = new List<IFixedUpdate>();
 
-    private bool _isUpdateRunning;
-    private void Awake()
+    private bool _canTick;
+
+    public void StartDispatch(IEnumerable<IUpdate> updates, IEnumerable<IFixedUpdate> fixedUpdates)
     {
-        Instance = this;
-        
-        List<IUpdate> updates = FindObjectsOfType<MonoBehaviour>().OfType<IUpdate>().ToList();;
-        _updates = updates;
-        
-        List<IFixedUpdate> fixedUpdates = FindObjectsOfType<MonoBehaviour>().OfType<IFixedUpdate>().ToList();
-        _fixedUpdates = fixedUpdates;
+        _updates.AddRange(updates);
+        _fixedUpdates.AddRange(fixedUpdates);
     }
-
-    private void Update()
+    
+    public void StopDispatch(IEnumerable<IUpdate> updates, IEnumerable<IFixedUpdate> fixedUpdates)
     {
-        if (!_isUpdateRunning)
+        foreach (var update in updates)
+        {
+            _updates.Remove(update);
+        }
+        
+        foreach (var fixedUpdate in fixedUpdates)
+        {
+            _fixedUpdates.Remove(fixedUpdate);
+        }
+    }
+    
+    public void Tick()
+    {
+        if (!_canTick)
         {
             return;
         }
@@ -43,9 +49,9 @@ public class UpdateController : MonoBehaviour, IPauseGameListener, IResumeGameLi
         }
     }
 
-    private void FixedUpdate()
+    public void FixedTick()
     {
-        if (!_isUpdateRunning)
+        if (!_canTick)
         {
             return;
         }
@@ -57,27 +63,27 @@ public class UpdateController : MonoBehaviour, IPauseGameListener, IResumeGameLi
 
     public void OnPauseGame()
     {
-        _isUpdateRunning = false;
+        _canTick = false;
     }
 
     public void OnResumeGame()
     {
-        _isUpdateRunning = true;
+        _canTick = true;
     }
 
     public void OnStartGame()
     {
-        _isUpdateRunning = true;
+        _canTick = true;
     }
 
     public void OnFinishGame()
     {
-        _isUpdateRunning = false;
+        _canTick = false;
     }
     
     public void OnMainMenu()
     {
-        _isUpdateRunning = false;
+        _canTick = false;
     }
 
     public void AddNewListener<T>(T newListener)
