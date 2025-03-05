@@ -53,5 +53,10 @@ namespace ShootEmUp
         {
             rigidbody2D.velocity = _targetVelocity;
         }
+
+        public void SetWorldTransform()
+        {
+            transform.SetParent(null);
+        }
     }
 }

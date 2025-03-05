@@ -1,4 +1,5 @@
 using UnityEngine;
+using VContainer;
 
 namespace ShootEmUp
 {
@@ -12,11 +13,10 @@ namespace ShootEmUp
         
         private BulletSystem _bulletSystem;
         
-        private ITeam _team; 
-
-        private void Awake()
+        private ITeam _team;
+        public void Initialize(BulletSystem bulletSystem)
         {
-            _bulletSystem = FindObjectOfType<BulletSystem>();
+            _bulletSystem = bulletSystem;
             _team = GetComponent<ITeam>();
         }
         

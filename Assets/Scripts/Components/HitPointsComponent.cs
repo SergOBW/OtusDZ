@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using VContainer;
 
 namespace ShootEmUp
 {
@@ -12,9 +11,6 @@ namespace ShootEmUp
         private int _hitPoints;
 
         [SerializeField]private bool isPlayer;
-
-        [Inject]
-        private EventBus _eventBus;
         
         public bool IsHitPointsExists() {
             return _hitPoints > 0;
@@ -26,10 +22,6 @@ namespace ShootEmUp
             if (_hitPoints <= 0)
             {
                 OnHpEmptyEvent?.Invoke(gameObject);
-                if (isPlayer)
-                {
-                    _eventBus.Publish(new PlayerDiedEvent());
-                }
             }
         }
 

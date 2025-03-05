@@ -7,17 +7,22 @@ using VContainer.Unity;
 public class GameLifetimeScope : LifetimeScope
 {
     [SerializeField] private MenuController menuController;
+    
     protected override void Configure(IContainerBuilder builder)
     {
         builder.Register<EventBus>(Lifetime.Singleton).AsSelf();
+        
+        builder.RegisterComponentInHierarchy<LevelBackground>().AsSelf().AsImplementedInterfaces();
+        
+        builder.RegisterComponentInHierarchy<LevelBounds>().AsSelf();
+        builder.RegisterComponentInHierarchy<BulletPool>().AsSelf();
+        builder.Register<BulletSystem>(Lifetime.Singleton).AsSelf().AsImplementedInterfaces();
         
         builder.Register<GameManager>(Lifetime.Singleton).AsImplementedInterfaces();
         builder.Register<GameStateController>(Lifetime.Singleton).AsSelf().AsImplementedInterfaces();
         builder.Register<UpdatesDispatcher>(Lifetime.Singleton).AsSelf().AsImplementedInterfaces();
 
-        builder.RegisterComponent(menuController)
-            .As<MenuController>()
-            .AsSelf().AsImplementedInterfaces();
+        builder.RegisterComponent(menuController).As<MenuController>().AsSelf().AsImplementedInterfaces();
         
         builder.RegisterBuildCallback(container =>
         {

@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.Serialization;
+using VContainer;
 
 namespace ShootEmUp
 {
@@ -21,20 +22,34 @@ namespace ShootEmUp
         [FormerlySerializedAs("m_params")] [SerializeField]
         private Params @params;
 
-        private void Awake()
+        [Inject]
+        public void Construct()
         {
-            _startPositionY = @params.StartPositionY;
-            _endPositionY = @params.EndPositionY;
+            _startPositionY = @params.EndPositionY; 
+            _endPositionY = @params.StartPositionY; 
             _movingSpeedY = @params.MovingSpeedY;
+        
             _myTransform = transform;
             var position = _myTransform.position;
             _positionX = position.x;
             _positionZ = position.z;
+            
+            _myTransform.position = new Vector3(
+                _positionX,
+                _startPositionY, 
+                _positionZ
+            );
         }
 
         public void CustomFixedUpdate()
         {
-            if (_myTransform.position.y <= _endPositionY)
+            _myTransform.position -= new Vector3(
+                0, 
+                _movingSpeedY * Time.fixedDeltaTime, 
+                0  
+            );
+            
+            if(_myTransform.position.y <= _endPositionY)
             {
                 _myTransform.position = new Vector3(
                     _positionX,
@@ -42,12 +57,6 @@ namespace ShootEmUp
                     _positionZ
                 );
             }
-
-            _myTransform.position -= new Vector3(
-                _positionX,
-                _movingSpeedY * Time.fixedDeltaTime,
-                _positionZ
-            );
         }
 
         [Serializable]

@@ -1,31 +1,28 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using VContainer;
 
 namespace ShootEmUp
 {
-    public sealed class EnemyManager : MonoBehaviour, IUpdate, IStartGameListener  , IPauseGameListener, IFinishGameListener, IResumeGameListener
+    public sealed class EnemyManager : IUpdate, IStartGameListener  , IPauseGameListener, IFinishGameListener, IResumeGameListener
     {
-        [SerializeField] private EnemyPositions enemyPositions;
-        
-        [SerializeField] private EnemyPool _enemyPool;
-
-        [SerializeField] private BulletSystem _bulletSystem;
-
-        [SerializeField] private float spawnTimer = 1f;
+        private float spawnTimer = 1f;
         
         private readonly HashSet<GameObject> _activeEnemies = new();
         
         private float _timer;
         private bool _isSpawning;
 
-        private UpdatesDispatcher updatesDispatcher;
-
-        [Inject]
-        public void Construct(UpdatesDispatcher updatesDispatcher)
+        private UpdatesDispatcher _updatesDispatcher;
+        private EnemyPositions _enemyPositions;
+        private EnemyPool _enemyPool;
+        private BulletSystem _bulletSystem;
+        
+        public EnemyManager(UpdatesDispatcher updatesDispatcher, EnemyPositions enemyPositions, EnemyPool enemyPool, BulletSystem bulletSystem)
         {
-            this.updatesDispatcher = updatesDispatcher;
+            _updatesDispatcher = updatesDispatcher;
+            _enemyPositions = enemyPositions;
+            _enemyPool = enemyPool;
+            _bulletSystem = bulletSystem;
         }
         
         public void CustomUpdate()
@@ -56,16 +53,14 @@ namespace ShootEmUp
             enemy.GetComponent<HitPointsComponent>().SetDefaults();
             enemy.GetComponent<HitPointsComponent>().OnHpEmptyEvent += this.OnEnemyDestroyed;
             
-            var attackPosition = enemyPositions.RandomAttackPosition();
+            var attackPosition = _enemyPositions.RandomAttackPosition();
             enemy.GetComponent<EnemyMoveAgent>().SetDestination(attackPosition.position);
-                
-            enemy.GetComponent<EnemyAttackAgent>().SetTarget(FindTarget().GetTransform());
             
-            enemy.GetComponent<EnemyMoveAgent>().Initialize(updatesDispatcher);
-            enemy.GetComponent<EnemyAttackAgent>().Initialize(updatesDispatcher);
-            
+            enemy.GetComponent<EnemyMoveAgent>().Initialize(_updatesDispatcher);
+            enemy.GetComponent<EnemyAttackAgent>().Initialize(_updatesDispatcher);
+
+            enemy.GetComponent<WeaponComponent>().Initialize(_bulletSystem);
         }
-        
         
         private void OnEnemyDestroyed(GameObject enemy)
         {
@@ -112,20 +107,5 @@ namespace ShootEmUp
         }
 
         #endregion
-
-        #region Utils
-
-        private ITarget FindTarget()
-        {
-            ITarget target = FindObjectsOfType<MonoBehaviour>()
-                .OfType<ITarget>()
-                .FirstOrDefault();
-
-            return target;
-        }
-
-
-        #endregion
-        
     }
 }

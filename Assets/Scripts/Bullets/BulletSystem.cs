@@ -13,22 +13,27 @@ namespace ShootEmUp
         public bool isPlayer;
     }
     
-    public sealed class BulletSystem : MonoBehaviour , IFixedUpdate, IPauseGameListener, IResumeGameListener, IFinishGameListener
+    public sealed class BulletSystem : IFixedUpdate, IPauseGameListener, IResumeGameListener, IFinishGameListener
     {
-        [SerializeField] private Transform worldTransform;
-        [SerializeField] private LevelBounds levelBounds;
-        [SerializeField] private BulletPool bulletPool;
+        private LevelBounds _levelBounds;
+        private BulletPool _bulletPool;
 
         private readonly List<Bullet> _cache = new();
+
+        public BulletSystem(LevelBounds levelBounds, BulletPool bulletPool)
+        {
+            _levelBounds = levelBounds;
+            _bulletPool = bulletPool;
+        }
 
         public void CustomFixedUpdate()
         {
             _cache.Clear();
-            _cache.AddRange(bulletPool.GetActiveBullets());
+            _cache.AddRange(_bulletPool.GetActiveBullets());
 
             foreach (var bullet in _cache)
             {
-                if (!levelBounds.InBounds(bullet.transform.position))
+                if (!_levelBounds.InBounds(bullet.transform.position))
                 {
                     RemoveBullet(bullet);
                 }
@@ -37,8 +42,8 @@ namespace ShootEmUp
 
         public void FlyBulletByArgs(Args args)
         {
-            var bullet = bulletPool.GetBullet();
-            bullet.transform.SetParent(worldTransform);
+            var bullet = _bulletPool.GetBullet();
+            bullet.SetWorldTransform();
         
             bullet.SetPosition(args.position);
             bullet.SetColor(args.color);
@@ -59,12 +64,12 @@ namespace ShootEmUp
         private void RemoveBullet(Bullet bullet)
         {
             bullet.OnCollisionEnteredEvent -= OnBulletCollision;
-            bulletPool.ReleaseBullet(bullet);
+            _bulletPool.ReleaseBullet(bullet);
         }
 
         public void OnPauseGame()
         {
-            foreach (var bullet in bulletPool.GetActiveBullets())
+            foreach (var bullet in _bulletPool.GetActiveBullets())
             {
                 bullet.Pause();
             }
@@ -72,7 +77,7 @@ namespace ShootEmUp
 
         public void OnResumeGame()
         {
-            foreach (var bullet in bulletPool.GetActiveBullets())
+            foreach (var bullet in _bulletPool.GetActiveBullets())
             {
                 bullet.Resume();
             }
@@ -81,7 +86,7 @@ namespace ShootEmUp
 
         public void OnFinishGame()
         {
-            foreach (var bullet in bulletPool.GetActiveBullets())
+            foreach (var bullet in _bulletPool.GetActiveBullets())
             {
                 RemoveBullet(bullet);
             }

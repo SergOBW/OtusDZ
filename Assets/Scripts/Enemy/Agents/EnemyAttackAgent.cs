@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 namespace ShootEmUp
@@ -10,26 +11,23 @@ namespace ShootEmUp
 
         private Transform _target;
         private float _currentTime;
+        
         private WeaponComponent _weaponComponent;
-        private UpdatesDispatcher updatesDispatcher;
-
-        public void SetTarget(Transform target)
-        {
-            _target = target;
-        }
+        private UpdatesDispatcher _updatesDispatcher;
 
         public void Initialize(UpdatesDispatcher updatesDispatcher)
         {
-            this.updatesDispatcher = updatesDispatcher;
+            _updatesDispatcher = updatesDispatcher;
             _weaponComponent = GetComponent<WeaponComponent>();
-            this.updatesDispatcher.AddNewListener(this);
+            _updatesDispatcher.AddNewListener(this);
+            _target = FindTarget().GetTransform();
             Reset();
         }
 
         public void DeInitialize()
         {
             _weaponComponent = null;
-            updatesDispatcher.RemoveListener(this);
+            _updatesDispatcher.RemoveListener(this);
         }
 
         public void Reset()
@@ -69,5 +67,20 @@ namespace ShootEmUp
             
             _weaponComponent.Fire(direction);
         }
+        
+        
+        #region Utils
+
+        private ITarget FindTarget()
+        {
+            ITarget target = FindObjectsOfType<MonoBehaviour>()
+                .OfType<ITarget>()
+                .FirstOrDefault();
+
+            return target;
+        }
+
+
+        #endregion
     }
 }

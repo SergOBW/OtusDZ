@@ -10,18 +10,31 @@ namespace ShootEmUp
         public HitPointsComponent HitPointsComponent { get; private set; }
         public WeaponComponent WeaponComponent { get; private set; }
         
-        private InputManager _inputManager;
-
         private Vector3 _startedPosition;
         
+        private InputManager _inputManager;
+        private EventBus _eventBus;
+        private BulletSystem _bulletSystem;
+        
         [Inject]
-        public void Construct(InputManager inputManager)
+        public void Construct(InputManager inputManager, EventBus eventBus, BulletSystem bulletSystem)
         {
-            HitPointsComponent = GetComponent<HitPointsComponent>();
-            WeaponComponent = GetComponent<WeaponComponent>();
             _inputManager = inputManager;
+            _eventBus = eventBus;
+            _bulletSystem = bulletSystem;
             _startedPosition = transform.position;
+            
+            HitPointsComponent = GetComponent<HitPointsComponent>();
+            HitPointsComponent.OnHpEmptyEvent += OnHpEmpty;
+            WeaponComponent = GetComponent<WeaponComponent>();
+            WeaponComponent.Initialize(_bulletSystem);
         }
+
+        private void OnHpEmpty(GameObject obj)
+        {
+            _eventBus.Publish(new PlayerDiedEvent());
+        }
+
         public void CustomUpdate()
         {
             if (_inputManager == null  || !WeaponComponent )
